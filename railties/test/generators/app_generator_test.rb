@@ -33,6 +33,7 @@ DEFAULT_APP_FILES = %w(
   app/views/pwa/service-worker.js
   bin/brakeman
   bin/bundler-audit
+  bin/ci
   bin/dev
   bin/docker-entrypoint
   bin/rails
@@ -45,6 +46,7 @@ DEFAULT_APP_FILES = %w(
   config/boot.rb
   config/bundler-audit.yml
   config/cable.yml
+  config/ci.rb
   config/credentials.yml.enc
   config/database.yml
   config/environment.rb
@@ -655,8 +657,16 @@ class AppGeneratorTest < Rails::Generators::TestCase
 
   def test_inclusion_of_ci_files
     run_generator
-    assert_file ".github/workflows/ci.yml"
-    assert_file ".github/dependabot.yml"
+    assert_file ".github/workflows/ci.yml" do |yaml|
+      assert_nothing_raised do
+        YAML.load(yaml)
+      end
+    end
+    assert_file ".github/dependabot.yml" do |yaml|
+      assert_nothing_raised do
+        YAML.load(yaml)
+      end
+    end
   end
 
   def test_ci_files_are_skipped_if_required
